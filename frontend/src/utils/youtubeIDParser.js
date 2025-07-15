@@ -1,5 +1,5 @@
 export default function youtubeIDParser(URL){
-    const splitedURL = URL.split("v=");
-    const id = splitedURL[1]
-    return id;
+    const idPart = URL.split("v=");
+    const id = idPart[1].split("&");
+    return id[0];
 }

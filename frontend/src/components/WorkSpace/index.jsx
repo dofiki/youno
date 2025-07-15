@@ -1,26 +1,12 @@
 import { useState, useEffect } from 'react';
 import YouTube from 'react-youtube';
 import { FaEdit, FaFolder, FaYoutube } from "react-icons/fa";
-import { IoArrowBack } from "react-icons/io5";
-import youtubeIDParser from '../utils/youtubeIDParser';
+import youtubeIDParser from '../../utils/youtubeIDParser';
+import data from "../../data/defaultFolders.js"
 
-const data = {
-  name: "root",
-  description: "Root folder",
-  children: [
-    {
-      name: "maths",
-      description: "Math-related content",
-      children: [
-        {
-          name: "calc",
-          description: "Calculator notes",
-          children: [],
-        },
-      ],
-    },
-  ],
-};
+// components
+import ContextMenu from './ContextMenu.jsx';
+import BreadCrumbs from './BreadCrumbs.jsx';
 
 function WorkSpace() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -32,10 +18,12 @@ function WorkSpace() {
   const [videoURLInput, setVideoURLInput] = useState('');
   const [didClickOnFolder, setDidClickOnFolder] = useState(false);
   const [clickedFolderIndex, setClickedFolderIndex] = useState(null);
-
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [editedDescription, setEditedDescription] = useState('');
   const [videoAdded, setVideoAdded] = useState(false);
+
+  const [timestampNote, setTimestampNote] = useState('');
+  const [player, setPlayer] = useState(null);
 
   const currentFolder = getCurrentFolder();
 
@@ -114,6 +102,7 @@ function WorkSpace() {
       isYoutubeNote: true,
       videoId: '',
       description: "YouTube video description.",
+      timestampNotes: [],
       children: [],
     });
 
@@ -163,11 +152,33 @@ function WorkSpace() {
   function handleLoadVideo() {
     const folder = getCurrentFolder();
     if (folder.isYoutubeNote) {
-      const youtubeID = youtubeIDParser(videoURLInput)
+      const youtubeID = youtubeIDParser(videoURLInput);
       folder.videoId = youtubeID;
-      setPath([...path]); // force re-render
-      setVideoAdded(true)
+      folder.timestampNotes = [];
+      setPath([...path]);
+      setVideoAdded(true);
     }
+  }
+
+  function handleAddTimestampNote() {
+    if (!player || !currentFolder.isYoutubeNote) return;
+    const time = Math.floor(player.getCurrentTime());
+    currentFolder.timestampNotes.push({ time, note: timestampNote });
+    setTimestampNote('');
+    setPath([...path]);
+  }
+
+  function handleJumpToTime(time) {
+    if (player) {
+      player.seekTo(time, true);
+      player.playVideo();
+    }
+  }
+
+  function formatTime(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
   }
 
   return (
@@ -176,47 +187,24 @@ function WorkSpace() {
       onContextMenu={handleRightClick}
       onClick={handleClick}
     >
-      {/* Context Menu */}
-      {showMenu && (
-        <div
-          className='absolute w-[15rem] h-auto bg-gray-400 flex flex-col justify-around z-50'
-          style={{ top: mousePosition.y, left: mousePosition.x }}
-        >
-          <button className='hover:bg-gray-500 py-2' onClick={handleCreateFolder}>
-            Create New Folder
-          </button>
-          <button className='hover:bg-gray-500 py-2' onClick={handleCreateYouTubeNote}>
-            Create YouTube Note
-          </button>
-          {didClickOnFolder && (
-            <button className='hover:bg-gray-500 py-2' onClick={handleDeleteFolder}>
-              Delete Folder
-            </button>
-          )}
-        </div>
-      )}
 
-      {/* UI */}
-      <div className='p-5 flex flex-col'>
-        {/* Breadcrumbs & Back */}
-        <div className='flex gap-10 items-center'>
-          {path.length > 0 && (
-            <button onClick={handleBack}><IoArrowBack /></button>
-          )}
-          <div>
-            {getBreadCrumbs().map((name, index) => (
-              <span key={index}>
-                {index > 0 && ' / '}
-                <span
-                  className="cursor-pointer text-gray-500 hover:text-black"
-                  onClick={() => setPath(path.slice(0, index))}
-                >
-                  {name}
-                </span>
-              </span>
-            ))}
-          </div>
-        </div>
+      <ContextMenu 
+        showMenu={showMenu}
+        mousePosition={mousePosition}
+        handleCreateFolder={handleCreateFolder}
+        handleCreateYouTubeNote={handleCreateYouTubeNote}
+        didClickOnFolder={didClickOnFolder}
+        handleDeleteFolder={handleDeleteFolder}
+      />
+     
+      <div className='p-5 flex flex-col w-[80vw]'>
+
+        <BreadCrumbs 
+          path={path}
+          handleBack={handleBack}
+          getBreadCrumbs={getBreadCrumbs}
+          setPath={setPath}
+        />
 
         {/* Grid Layout */}
         <div className="grid grid-cols-5 grid-rows-5 gap-0 h-full w-full mt-5">
@@ -236,11 +224,11 @@ function WorkSpace() {
               ))}
             </div>
 
- 
-             {/* YouTube Embed Section */}
+            {/* YouTube Embed Section */}
             {currentFolder.isYoutubeNote && (
               <div className='flex flex-col mt-10 gap-2'>
-                <h2 className='text-xl mb-2'>Enter YouTube Video URL</h2>
+                <h2 className='text-xl mb-2'>
+                  Enter YouTube Video URL</h2>
                 <input
                   type='text'
                   className='border px-2 py-1 rounded mr-2 w-[30rem]'
@@ -257,19 +245,50 @@ function WorkSpace() {
 
                 {currentFolder.videoId && (
                   <div className='mt-5'>
-                    <YouTube videoId={currentFolder.videoId} />
+                    <YouTube videoId={currentFolder.videoId} onReady={(e) => setPlayer(e.target)} />
                   </div>
                 )}
 
-        {videoAdded && <div className='h-80'>
-            <button className='m-2 p-2 bg-green-600 text-white rounded-2xl '>Add timestamp</button>
-            </div>}
+                {videoAdded && (
+                  <div className='mt-5 flex flex-col gap-3'>
+                    <h3 className='text-lg font-semibold'>Add Timestamped Note</h3>
+                    <div className='flex gap-2'>
+                      <input
+                        className='border px-2 py-1 rounded w-[25rem]'
+                        value={timestampNote}
+                        onChange={(e) => setTimestampNote(e.target.value)}
+                        placeholder='Note at current time...'
+                      />
+                      <button
+                        onClick={handleAddTimestampNote}
+                        className='bg-green-600 text-white rounded px-4 hover:bg-green-700'
+                      >
+                        Add Timestamp
+                      </button>
+                    </div>
+
+                    <div className='mt-4'>
+                      <h4 className='font-semibold mb-2'>Timestamped Notes:</h4>
+                      <ul className='space-y-2'>
+                        {currentFolder.timestampNotes?.map((note, idx) => (
+                          <li
+                            key={idx}
+                            className='cursor-pointer bg-white shadow px-3 py-2 rounded hover:bg-gray-100'
+                            onClick={() => handleJumpToTime(note.time)}
+                          >
+                            <span className='text-blue-600 font-mono mr-2'>
+                              [{formatTime(note.time)}]
+                            </span>
+                            {note.note}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
-
-  
-   
 
           {/* Right: Folder Info */}
           <div className="col-span-1 row-span-5 p-4 border-l border-gray-400 flex flex-col
@@ -291,7 +310,6 @@ function WorkSpace() {
               </div>
             )}
 
-            {/* Description Section */}
             {isEditingDescription ? (
               <form onSubmit={handleDescriptionSubmit}>
                 <textarea
@@ -313,8 +331,6 @@ function WorkSpace() {
             )}
           </div>
         </div>
-
-        {!currentFolder.children && <p>No items here.</p>}
       </div>
     </div>
   );
