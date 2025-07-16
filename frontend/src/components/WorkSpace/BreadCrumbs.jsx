@@ -1,10 +1,10 @@
 import { IoArrowBack } from "react-icons/io5";
 
 export default function BreadCrumbs({
-  path,
-  handleBack,
-  getBreadCrumbs,
-  setPath
+    path,
+    handleBack,
+    getBreadCrumbs,
+    setPath
 }) {
 
   return (
@@ -14,6 +14,7 @@ export default function BreadCrumbs({
           <IoArrowBack className="cursor-pointer text-gray-500 hover:text-black"/>
         </button>
       )}
+
       <div>
         {getBreadCrumbs().map((name, index) => (
           <span key={index}>
@@ -27,6 +28,7 @@ export default function BreadCrumbs({
           </span>
         ))}
       </div>
+      
     </div>
   );
 }

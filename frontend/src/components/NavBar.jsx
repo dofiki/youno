@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 function NavBar() {
   return (
-    <div className='w-screen h-[3rem] bg-black text-white flex justify-around items-center'>
+    <div className='w-screen h-[3rem] bg-black text-white flex justify-between pl-[15rem] pr-[15rem] items-center'>
       {/* logo */}
       <div className='flex gap-2'>
         <img src='/youno-logo.png' alt='youno logo' className='w-6 h-6' />
