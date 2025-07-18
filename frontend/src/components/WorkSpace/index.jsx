@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-
 import youtubeIDParser from '../../utils/youtubeIDParser';
-import data from "../../data/defaultFolders.js";
+import defaultData from "../../data/defaultFolders.js";
 
 // Components
 import ContextMenu from './ContextMenu.jsx';
@@ -11,7 +10,7 @@ import FolderDetails from './FolderDetails.jsx';
 import YoutubeSection from './YoutubeSection.jsx';
 
 function WorkSpace() {
-
+  const [foldersData, setFoldersData] = useState(() => structuredClone(defaultData));
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showMenu, setShowMenu] = useState(false);
   const [path, setPath] = useState([]);
@@ -30,7 +29,24 @@ function WorkSpace() {
 
   const currentFolder = getCurrentFolder();
 
-  // Event Handlers
+  function getCurrentFolder() {
+    let folder = foldersData;
+    for (const index of path) {
+      folder = folder.children[index];
+    }
+    return folder;
+  }
+
+  function updateCurrentFolder(modifierFn) {
+    const newData = structuredClone(foldersData);
+    let folder = newData;
+    for (const index of path) {
+      folder = folder.children[index];
+    }
+    modifierFn(folder);
+    setFoldersData(newData);
+  }
+
   function handleRightClick(event) {
     event.preventDefault();
     setMousePosition({ x: event.clientX, y: event.clientY });
@@ -60,44 +76,45 @@ function WorkSpace() {
   }
 
   function handleCreateFolder() {
-    const folder = getCurrentFolder();
-    folder.children ??= [];
-
-    folder.children.push({
-      name: `new folder ${folder.children.length + 1}`,
-      description: "Click to edit description.",
-      children: [],
+    updateCurrentFolder(folder => {
+      folder.children ??= [];
+      folder.children.push({
+        name: `new folder ${folder.children.length + 1}`,
+        description: "Click to edit description.",
+        children: [],
+      });
     });
-
-    setPath([...path]);
     setShowMenu(false);
   }
 
   function handleCreateYouTubeNote() {
-    const folder = getCurrentFolder();
-    folder.children ??= [];
-
-    folder.children.push({
-      name: `YouTube Note ${folder.children.length + 1}`,
-      isYoutubeNote: true,
-      videoId: '',
-      description: "YouTube video description.",
-      timestampNotes: [],
-      children: [],
+    updateCurrentFolder(folder => {
+      folder.children ??= [];
+      folder.children.push({
+        name: `YouTube Note ${folder.children.length + 1}`,
+        isYoutubeNote: true,
+        videoId: '',
+        description: "YouTube video description.",
+        timestampNotes: [],
+        children: [],
+      });
     });
-
-    setPath([...path]);
     setShowMenu(false);
   }
 
   function handleDeleteFolder() {
-    const folder = getCurrentFolder();
-    if (folder.children && clickedFolderIndex !== null) {
-      folder.children.splice(clickedFolderIndex, 1);
-      setClickedFolderIndex(null);
-      setShowMenu(false);
-      setPath([...path]);
+    const newData = structuredClone(foldersData);
+    let folder = newData;
+    for (const index of path.slice(0, -1)) {
+      folder = folder.children[index];
     }
+    const parent = folder;
+    if (parent.children && clickedFolderIndex !== null) {
+      parent.children.splice(clickedFolderIndex, 1);
+    }
+    setFoldersData(newData);
+    setClickedFolderIndex(null);
+    setShowMenu(false);
   }
 
   function handleEditName() {
@@ -107,11 +124,9 @@ function WorkSpace() {
 
   function handleNameSubmit(e) {
     e.preventDefault();
-    let folder = data;
-    for (const index of path) {
-      folder = folder.children[index];
-    }
-    folder.name = editedName;
+    updateCurrentFolder(folder => {
+      folder.name = editedName;
+    });
     setIsEditing(false);
     setCurrentFolderName(editedName);
   }
@@ -123,29 +138,29 @@ function WorkSpace() {
 
   function handleDescriptionSubmit(e) {
     e.preventDefault();
-    const folder = getCurrentFolder();
-    folder.description = editedDescription;
+    updateCurrentFolder(folder => {
+      folder.description = editedDescription;
+    });
     setIsEditingDescription(false);
-    setPath([...path]); // trigger re-render
   }
 
   function handleLoadVideo() {
-    const folder = getCurrentFolder();
-    if (folder.isYoutubeNote) {
-      const youtubeID = youtubeIDParser(videoURLInput);
+    const youtubeID = youtubeIDParser(videoURLInput);
+    if (!youtubeID) return;
+    updateCurrentFolder(folder => {
       folder.videoId = youtubeID;
       folder.timestampNotes = [];
-      setPath([...path]);
-      setVideoAdded(true);
-    }
+    });
+    setVideoAdded(true);
   }
 
   function handleAddTimestampNote() {
     if (!player || !currentFolder.isYoutubeNote) return;
     const time = Math.floor(player.getCurrentTime());
-    currentFolder.timestampNotes.push({ time, note: timestampNote });
+    updateCurrentFolder(folder => {
+      folder.timestampNotes.push({ time, note: timestampNote });
+    });
     setTimestampNote('');
-    setPath([...path]);
   }
 
   function handleJumpToTime(time) {
@@ -162,7 +177,7 @@ function WorkSpace() {
   }
 
   function getBreadCrumbs() {
-    let folder = data;
+    let folder = foldersData;
     const names = [folder.name];
     for (const index of path) {
       folder = folder.children[index];
@@ -171,37 +186,17 @@ function WorkSpace() {
     return names;
   }
 
-  function getCurrentFolder() {
-    let folder = data;
-    for (const index of path) {
-      folder = folder.children[index];
-    }
-    return folder;
-  }
-
   useEffect(() => {
-  if (currentFolder.isYoutubeNote) {
-    setDisabledButtons(true);
-  } else {
-    setDisabledButtons(false);
-  }
-}, [currentFolder]);
+    setCurrentFolderName(currentFolder.name);
+    setDisabledButtons(!!currentFolder.isYoutubeNote);
+  }, [path, foldersData]);
 
-
-  useEffect(() => {
-    const folder = getCurrentFolder();
-    setCurrentFolderName(folder.name);
-  }, [path]);
-
-
-  // Render
   return (
     <div
       className='bg-gray-300 min-h-[calc(100vh-3rem)] pl-[15rem] pr-[15rem]'
       onContextMenu={handleRightClick}
       onClick={handleClick}
     >
-      {console.log(data)}
       <ContextMenu 
         showMenu={showMenu}
         mousePosition={mousePosition}
@@ -212,9 +207,7 @@ function WorkSpace() {
         disabledButtons={disabledButtons}
       />
 
-      <div className=' flex flex-col pt-8'>
-
-        {/* Top*/}
+      <div className='flex flex-col pt-8'>
         <BreadCrumbs 
           path={path}
           handleBack={handleBack}
@@ -222,10 +215,7 @@ function WorkSpace() {
           setPath={setPath}
         />
 
-       {/* Bottom*/}
         <div className="flex justify-around pt-4">
-
-        { /* Bottom-Left */}
           <FolderGrid 
             currentFolder={currentFolder}
             handleFolderClick={handleFolderClick}
@@ -249,7 +239,6 @@ function WorkSpace() {
             setDisabledButtons={setDisabledButtons}
           />
 
-        { /* Bottom-Right */}
           <FolderDetails 
             isEditing={isEditing}
             handleNameSubmit={handleNameSubmit}
@@ -264,11 +253,8 @@ function WorkSpace() {
             handleEditDescription={handleEditDescription}
             currentFolder={currentFolder}
           />
-
         </div>
-
       </div>
-
     </div>
   );
 }
