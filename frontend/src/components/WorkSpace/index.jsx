@@ -26,6 +26,7 @@ function WorkSpace() {
   const [videoAdded, setVideoAdded] = useState(false);
   const [timestampNote, setTimestampNote] = useState('');
   const [player, setPlayer] = useState(null);
+  const [disabledButtons, setDisabledButtons] = useState(false);
 
   const currentFolder = getCurrentFolder();
 
@@ -179,9 +180,19 @@ function WorkSpace() {
   }
 
   useEffect(() => {
+  if (currentFolder.isYoutubeNote) {
+    setDisabledButtons(true);
+  } else {
+    setDisabledButtons(false);
+  }
+}, [currentFolder]);
+
+
+  useEffect(() => {
     const folder = getCurrentFolder();
     setCurrentFolderName(folder.name);
   }, [path]);
+
 
   // Render
   return (
@@ -190,6 +201,7 @@ function WorkSpace() {
       onContextMenu={handleRightClick}
       onClick={handleClick}
     >
+      {console.log(data)}
       <ContextMenu 
         showMenu={showMenu}
         mousePosition={mousePosition}
@@ -197,6 +209,7 @@ function WorkSpace() {
         handleCreateYouTubeNote={handleCreateYouTubeNote}
         didClickOnFolder={didClickOnFolder}
         handleDeleteFolder={handleDeleteFolder}
+        disabledButtons={disabledButtons}
       />
 
       <div className=' flex flex-col pt-8'>
@@ -233,6 +246,7 @@ function WorkSpace() {
             player={player}
             setPlayer={setPlayer}
             formatTime={formatTime}
+            setDisabledButtons={setDisabledButtons}
           />
 
         { /* Bottom-Right */}

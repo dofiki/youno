@@ -11,7 +11,7 @@ export default function YoutubeSection({
   handleAddTimestampNote,
   handleJumpToTime,
   setPlayer,
-  formatTime
+  formatTime,
 }) {
   if (!currentFolder.isYoutubeNote) return null;
 
@@ -36,7 +36,13 @@ export default function YoutubeSection({
 
       {currentFolder.videoId && (
         <div className='mt-5'>
-          <YouTube videoId={currentFolder.videoId} onReady={(e) => setPlayer(e.target)} />
+         <YouTube
+          videoId={currentFolder.videoId}
+          key={currentFolder.videoId}
+          onReady={(e) => setPlayer(e.target)}
+          opts={{ playerVars: { autoplay: 0 } }}
+        />
+
         </div>
       )}
 
