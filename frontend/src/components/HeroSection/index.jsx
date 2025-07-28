@@ -1,8 +1,9 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import ContainerModel from './ContainerModel';
+import RotatingModel from './RotatingModel';
 
 function HeroSection() {
+
   return (
     <div className="relative flex flex-col md:flex-row min-h-[80vh] bg-gray-900
      items-center overflow-hidden">
@@ -59,7 +60,7 @@ function HeroSection() {
             shadow-mapSize-width={1024}
             shadow-mapSize-height={1024}
           />
-          <ContainerModel rotation={[0, 70 * (Math.PI / 180), 0]} castShadow receiveShadow />
+          <RotatingModel />
           <OrbitControls />
         </Canvas>
       </div>

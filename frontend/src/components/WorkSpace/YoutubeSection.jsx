@@ -19,7 +19,8 @@ export default function YoutubeSection({
     <div className='flex flex-col gap-2 w-full pt-3'>
       <h2 className='text-xl mb-2'>Enter YouTube Video URL</h2>
       
-      <input
+      <div>
+            <input
         type='text'
         className='border px-2 py-1 rounded mr-2 w-[30rem]'
         value={videoURLInput}
@@ -29,10 +30,11 @@ export default function YoutubeSection({
 
       <button
         onClick={handleLoadVideo}
-        className='bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 w-30'
+        className='bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 w-30'
       >
         Load Video
       </button>
+      </div>
 
       {currentFolder.videoId && (
         <div className='mt-5'>

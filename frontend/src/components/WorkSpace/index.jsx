@@ -192,8 +192,10 @@ function WorkSpace() {
   }, [path, foldersData]);
 
   return (
+
+
     <div
-      className='bg-gray-300 min-h-[calc(100vh-3rem)] pl-[15rem] pr-[15rem]'
+      className='bg-gray-300 min-h-[calc(100vh-3rem)] pl-[2rem] pr-[1rem] xl:pl-[15rem] xl:pr-[15rem]'
       onContextMenu={handleRightClick}
       onClick={handleClick}
     >
@@ -215,7 +217,9 @@ function WorkSpace() {
           setPath={setPath}
         />
 
-        <div className="flex justify-around pt-4">
+        <div className="flex flex-col gap-10 md:flex-row justify-around pt-4">
+             
+          
           <FolderGrid 
             currentFolder={currentFolder}
             handleFolderClick={handleFolderClick}
@@ -253,8 +257,12 @@ function WorkSpace() {
             handleEditDescription={handleEditDescription}
             currentFolder={currentFolder}
           />
+
         </div>
+  
       </div>
+
+     
     </div>
   );
 }
