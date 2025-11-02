@@ -15,19 +15,18 @@ function NavBar() {
   }
 
   return (
-    <div className='w-screen h-[3rem] bg-black text-white flex 
-         justify-around items-center z-10'>
+    <div className='h-[3rem] bg-[#3B1C32] text-white flex 
+         justify-around items-center z-15'>
       
-      <div className='flex gap-2 items-center'>
-        <Link to='/'><img src='/youno-logo.png' alt='youno logo' className='w-5 h-5' /></Link>
+      <div className='flex gap-2 items-center hover:opacity-60 transition-all ease-in duration-75'>
+        <Link to='/'><img src='/youno-logo.png' alt='youno logo' className='w-5 h-5 hover:' /></Link>
         <p style={{ fontFamily: '"Intel One Mono", monospace', fontSize:"1.2rem", fontWeight:"bolder"}}>
           <Link to='/'>youno</Link></p>
       </div>
       
       <div className='hidden sm:flex sm:gap-5 sm:text-[0.9rem]'>
-        <Link to='/' className='hover:text-blue-400 transition-all ease-in duration-75'>Home</Link>
-        <Link to='/container' className='hover:text-blue-400 transition-all ease-in duration-75'>Container</Link>
-        <Link to='/profile' className='hover:text-blue-400 transition-all ease-in duration-75'>Profile</Link>
+        <Link to='/' className='hover:text-[#da42ae] transition-all ease-in duration-75'>Home</Link>
+        <Link to='/container' className='hover:text-[#da42ae] transition-all ease-in duration-75'>Container</Link>
       </div>
 
       <div className='flex gap-2 sm:hidden'>
@@ -40,12 +39,12 @@ function NavBar() {
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: -30, opacity: 0 }}
         transition={{ duration: 0.2 }}
-        className="absolute top-[3rem] right-0 bg-black text-white 
-        w-full flex flex-col items-center sm:hidden z-5 p-6"
+        className="absolute top-[3rem] right-0 bg-[#3B1C32] text-white 
+        w-full flex flex-col items-center sm:hidden z-15 p-6"
       >
-        <Link to="/" className="py-2 hover:text-blue-400" onClick={handleClick}>Home</Link>
-        <Link to="/container" className="py-2 hover:text-blue-400" onClick={handleClick}>Container</Link>
-        <Link to="/profile" className="py-2 hover:text-blue-400" onClick={handleClick}>Profile</Link>
+        <Link to="/" className="py-2 hover:text-[#da42ae]" onClick={handleClick}>Home</Link>
+        <Link to="/container" className="py-2 hover:text-[#da42ae]" onClick={handleClick}>Container</Link>
+       
       </motion.div>
 )}
 

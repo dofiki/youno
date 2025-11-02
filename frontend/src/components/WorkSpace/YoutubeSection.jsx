@@ -19,7 +19,7 @@ export default function YoutubeSection({
     <div className='flex flex-col gap-2 w-full pt-3'>
       <h2 className='text-xl mb-2'>Enter YouTube Video URL</h2>
       
-      <div>
+      <div className='flex'>
             <input
         type='text'
         className='border px-2 py-1 rounded mr-2 w-[30rem]'
@@ -30,7 +30,9 @@ export default function YoutubeSection({
 
       <button
         onClick={handleLoadVideo}
-        className='bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 w-30'
+        className=" bg-[#561a45] z-5 text-white w-max self-center
+         p-3 rounded-2xl font-bold flex align-middle 
+        justify-center gap-2 hover:bg-[#2b1424] transition-all ease-in delay-5 cursor-pointer"
       >
         Load Video
       </button>
@@ -49,7 +51,7 @@ export default function YoutubeSection({
       )}
 
       {videoAdded && (
-        <div className='mt-5 flex flex-col gap-3'>
+        <div className='mt-5 flex flex-col gap-3 pb-15'>
           <h3 className='text-lg font-semibold'>Add Timestamped Note</h3>
 
           <div className='flex gap-2'>
@@ -61,7 +63,8 @@ export default function YoutubeSection({
             />
             <button
               onClick={handleAddTimestampNote}
-              className='bg-green-600 text-white rounded px-4 hover:bg-green-700'
+               className=" bg-[#561a45] z-5 text-white w-max self-center p-3 rounded-2xl font-bold flex align-middle 
+        justify-center gap-2 hover:bg-[#2b1424] transition-all ease-in delay-5 cursor-pointer "
             >
               Add Timestamp
             </button>
@@ -73,10 +76,11 @@ export default function YoutubeSection({
               {currentFolder.timestampNotes?.map((note, idx) => (
                 <li
                   key={idx}
-                  className='cursor-pointer bg-white shadow px-3 py-2 rounded hover:bg-gray-100'
+                  className='cursor-pointer bg-[#561a45] text-white shadow px-3 py-2 rounded hover:bg-[#2b1424]
+                  transition-all ease-in delay-5 w-[30vw] overflow-y-auto'
                   onClick={() => handleJumpToTime(note.time)}
                 >
-                  <span className='text-blue-600 font-mono mr-2'>
+                  <span className='text-white font-mono mr-2'>
                     [{formatTime(note.time)}]
                   </span>
                   {note.note}

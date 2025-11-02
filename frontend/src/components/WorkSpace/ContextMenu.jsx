@@ -11,16 +11,14 @@ export default function ContextMenu({
 }) {
   if (!showMenu) return null;
 
-  const baseBtn =
-    "py-2 text-left pl-5 flex items-center gap-2 transition-all ease-in duration-75";
-
+  const baseBtn = "py-2 text-left pl-5 flex items-center gap-2 transition-all ease-in duration-75";
   const activeStyle = "hover:bg-gray-500 hover:text-white";
   const disabledStyle = "opacity-50 cursor-not-allowed";
 
   return (
     <div
       className="absolute w-[12rem] text-[0.9rem] h-auto bg-gray-600 text-white 
-        flex flex-col z-50 outline-1 outline-gray-300"
+        flex flex-col z-50 outline-1 outline-gray-600"
       style={{ top: mousePosition.y, left: mousePosition.x }}
     >
       <button

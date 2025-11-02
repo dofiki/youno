@@ -15,7 +15,7 @@ export default function FolderDetails({
     currentFolder
 }){
     return(
-           <div className="border-l border-gray-400 flex flex-col gap-2 w-60 wrap-break-word pl-2">
+           <div className="border-l border-white  flex flex-col gap-2 w-60 wrap-break-word pl-2 mb-10">
             
             {isEditing ? (
               <form onSubmit={handleNameSubmit}>
@@ -30,7 +30,7 @@ export default function FolderDetails({
             ) : (
               <div className='flex flex-row items-center gap-2'>
                 <span>{currentFolderName}</span>
-                <FaEdit className="hover:text-gray-600 cursor-pointer" onClick={handleEditName} />
+                <FaEdit className="hover:text-[#da42ae]  cursor-pointer" onClick={handleEditName} />
               </div>
             )}
 
@@ -48,9 +48,9 @@ export default function FolderDetails({
               <>
                 <div className='flex flex-row items-center gap-2 mt-4'>
                   <span className="font-semibold">Description:</span>
-                  <FaEdit className="hover:text-gray-600 cursor-pointer" onClick={handleEditDescription} />
+                  <FaEdit className="hover:text-[#da42ae]  cursor-pointer" onClick={handleEditDescription} />
                 </div>
-                <span className='text-sm text-gray-700'>{currentFolder.description || 'No description provided.'}</span>
+                <span className='text-sm text-[#da42ae] '>{currentFolder.description || 'No description provided.'}</span>
               </>
             )}
           </div>

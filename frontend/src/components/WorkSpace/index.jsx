@@ -29,13 +29,26 @@ function WorkSpace() {
 
   const currentFolder = getCurrentFolder();
 
-  function getCurrentFolder() {
+   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+function getCurrentFolder() {
+  try {
     let folder = foldersData;
     for (const index of path) {
+      if (!folder.children || !folder.children[index]) {
+        // Path broken — go back to root
+        return foldersData;
+      }
       folder = folder.children[index];
     }
     return folder;
+  } catch {
+    // In case of any runtime edge case
+    return foldersData;
   }
+}
 
   function updateCurrentFolder(modifierFn) {
     const newData = structuredClone(foldersData);
@@ -102,20 +115,43 @@ function WorkSpace() {
     setShowMenu(false);
   }
 
-  function handleDeleteFolder() {
-    const newData = structuredClone(foldersData);
-    let folder = newData;
-    for (const index of path.slice(0, -1)) {
-      folder = folder.children[index];
-    }
-    const parent = folder;
-    if (parent.children && clickedFolderIndex !== null) {
-      parent.children.splice(clickedFolderIndex, 1);
-    }
-    setFoldersData(newData);
-    setClickedFolderIndex(null);
-    setShowMenu(false);
+ function handleDeleteFolder() {
+  const newData = structuredClone(foldersData);
+
+  // Navigate to the folder you're *currently viewing*
+  let folder = newData;
+  for (const index of path) {
+    folder = folder.children[index];
   }
+
+  // Delete within this folder
+  if (folder.children && clickedFolderIndex !== null) {
+    folder.children.splice(clickedFolderIndex, 1);
+  }
+
+  setFoldersData(newData);
+  setClickedFolderIndex(null);
+  setShowMenu(false);
+
+  // Handle "you deleted the folder you're currently in" case
+  const currentIndex = path[path.length - 1];
+  if (clickedFolderIndex === currentIndex) {
+    setPath(path.slice(0, -1));
+  }
+
+  //  If you deleted something before your current index, shift path
+  if (clickedFolderIndex < path[path.length - 1]) {
+    const newPath = [...path];
+    newPath[newPath.length - 1] = newPath[newPath.length - 1] - 1;
+    setPath(newPath);
+  }
+
+  //  Root safety: if you deleted everything at root
+  if (path.length === 0 && newData.children?.length === 0) {
+    setPath([]);
+  }
+}
+
 
   function handleEditName() {
     setIsEditing(true);
@@ -193,9 +229,9 @@ function WorkSpace() {
 
   return (
 
-
     <div
-      className='bg-gray-300 min-h-[calc(100vh-3rem)] pl-[2rem] pr-[1rem] xl:pl-[15rem] xl:pr-[15rem]'
+      className='bg-[#3B1C32] text-white min-h-[calc(100vh-3rem)]
+       pl-[2rem] pr-[1rem] xl:pl-[15rem] xl:pr-[15rem]'
       onContextMenu={handleRightClick}
       onClick={handleClick}
     >
@@ -218,13 +254,21 @@ function WorkSpace() {
         />
 
         <div className="flex flex-col gap-10 md:flex-row justify-around pt-4">
-             
+        
+        {!currentFolder ? (
+        <div className="text-center pt-8 text-gray-300">
+        Folder not found.
+      </div>
+      ) : (
+      <FolderGrid 
+        currentFolder={currentFolder}
+        handleFolderClick={handleFolderClick}
+        handleFolderRightClick={handleFolderRightClick}
+      />
+)}
+
           
-          <FolderGrid 
-            currentFolder={currentFolder}
-            handleFolderClick={handleFolderClick}
-            handleFolderRightClick={handleFolderRightClick}
-          />
+         
 
           <YoutubeSection 
             currentFolder={currentFolder}

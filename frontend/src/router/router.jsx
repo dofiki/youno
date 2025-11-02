@@ -11,7 +11,6 @@ export default function Router(){
             <Route path='/container' element={<ContainerPage />} />
             <Route path='/profile' element={<ProfilePage />} />
             <Route path='*' element={<NotFoundPage />} />
-
         </Routes>
     )
 }
