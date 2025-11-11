@@ -16,7 +16,7 @@ function HeroSection() {
       </div>
 
       <div className="h-[80vh] z-10">
-        <p className="text-white text-4xl sm:text-6xl lg:text-8xl 
+        <p className="text-white text-5xl sm:text-6xl lg:text-8xl 
         md:text-7xl font-bold pt-10 pl-5 pr-5 md:pl-30 md:pr-20 font-Intel">
           Organize and Attach Notes on YouTube Videos.
         </p>
