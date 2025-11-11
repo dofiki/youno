@@ -3,8 +3,41 @@ import { IoTime } from "react-icons/io5";
 import { MdOutlineNoteAdd } from "react-icons/md";
 import { FaArrowCircleRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function ServiceSection() {
+
+  const cardVariants = {
+    hidden: { opacity: 0, x: -120 },
+    visible: (i) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.7,
+        ease: "easeInOut",
+        delay: i * 0.2, // stagger effect
+      },
+    }),
+  };
+
+  const services = [
+    {
+      icon: <PiFolderSimpleFill size={22}  className="z-1000"/>,
+      title: "Organize Videos",
+      text: "Organize your YouTube videos into folders for easy, focused access.",
+    },
+    {
+      icon: <IoTime size={22} className="z-1000" />,
+      title: "Timestamped Notes",
+      text: "Take notes tied directly to specific video timestamps.",
+    },
+    {
+      icon: <MdOutlineNoteAdd size={22} className="z-1000" />,
+      title: "Note Summaries",
+      text: "Create quick summaries of your notes to review key points.",
+    },
+  ];
+
   return (
     <div className=" relative h-[150vh] lg:h-[100vh] flex flex-col pr-6 pl-6 pt-15 pb-20 
         bg-[#6A1E55] text-[#3B1C32] gap-4 justify-center ">
@@ -20,40 +53,28 @@ export default function ServiceSection() {
         style={{ fontFamily: '"Intel One Mono", monospace' }}
       > Our Services </h1>
 
-      <div className="flex  flex-wrap justify-center gap-4 h-full items-center">
-
-        <div className=" relative bg-white opacity-65 p-4 rounded-2xl rounded-tl-none  flex flex-col items-center 
-          gap-1 h-[12rem] w-[22rem] justify-center text-black before:content-[''] before:absolute before:-top-[12px]
-          before:left-0 before:bg-white before:h-10 before:w-35 before:rounded-tl-2xl after:content-[''] after:absolute 
-          after:-top-1 after:left-28 after:bg-white after:h-10 after:w-10 after:-rotate-28 ">
-          <PiFolderSimpleFill size={22} className="z-5"/>
-          <h1 className="font-bold text-center text-black text-[1.2rem]">Organize Videos</h1>
-          <p className="text-center">
-            Organize your YouTube videos into folders for easy, focused access.
-          </p>
-        </div>
-
-        <div className=" relative bg-white opacity-65 p-4 rounded-2xl rounded-tl-none  flex flex-col items-center 
-          gap-1 h-[12rem] w-[22rem] justify-center text-black before:content-[''] before:absolute before:-top-[12px]
-          before:left-0 before:bg-white before:h-10 before:w-35 before:rounded-tl-2xl after:content-[''] after:absolute 
-          after:-top-1 after:left-28 after:bg-white after:h-10 after:w-10 after:-rotate-28 ">
-          <IoTime size={22} />
-          <h1 className="font-bold text-center text-black text-[1.2rem]">Timestamped Notes</h1>
-          <p className="text-center">
-            Take notes tied directly to specific video timestamps.
-          </p>
-        </div>
-
-          <div className=" relative bg-white opacity-65 p-4 rounded-2xl rounded-tl-none  flex flex-col items-center 
-          gap-1 h-[12rem] w-[22rem] justify-center text-black before:content-[''] before:absolute before:-top-[12px]
-          before:left-0 before:bg-white before:h-10 before:w-35 before:rounded-tl-2xl after:content-[''] after:absolute 
-          after:-top-1 after:left-28 after:bg-white after:h-10 after:w-10 after:-rotate-28 ">
-          <MdOutlineNoteAdd size={22} />
-          <h1 className="font-bold text-center text-black text-[1.2rem]">Note Summaries</h1>
-          <p className="text-center">
-            Create quick summaries of your notes to review key points.
-          </p>
-        </div>
+       <div className="flex flex-wrap justify-center gap-4 h-full items-center z-10">
+        {services.map((service, i) => (
+          <motion.div
+            key={i}
+            custom={i}
+            variants={cardVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            className="relative bg-white opacity-65 p-4 rounded-2xl rounded-tl-none 
+              flex flex-col items-center gap-1 h-[12rem] w-[22rem] justify-center text-black 
+              before:content-[''] before:absolute before:-top-[12px] before:left-0 before:bg-white 
+              before:h-10 before:w-35 before:rounded-tl-2xl after:content-[''] after:absolute 
+              after:-top-1 after:left-28 after:bg-white after:h-10 after:w-10 after:-rotate-28"
+          >
+            {service.icon}
+            <h1 className="font-bold text-center text-black text-[1.2rem]">
+              {service.title}
+            </h1>
+            <p className="text-center">{service.text}</p>
+          </motion.div>
+        ))}
       </div>
 
         <Link to="/container" className="bg-[#561a45] z-5 text-white w-max self-center

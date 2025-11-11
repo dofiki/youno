@@ -23,7 +23,7 @@ function HeroSection() {
       </div>
 
 
-       <div className='absolute w-[35rem] h-[25rem] bottom-0 sm:right-0 pr-5 md:pr-20 z-5'>
+       <div className='absolute  w-[35rem] h-[25rem] bottom-0 sm:right-0 pr-5 md:pr-20 z-50'>
         <Canvas
           shadows
           camera={{ position: [-1, 2, -5], fov: 55 }}
