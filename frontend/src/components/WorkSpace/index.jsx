@@ -10,7 +10,16 @@ import FolderDetails from './FolderDetails.jsx';
 import YoutubeSection from './YoutubeSection.jsx';
 
 function WorkSpace() {
-  const [foldersData, setFoldersData] = useState(() => structuredClone(defaultData));
+
+  const [foldersData, setFoldersData] = useState(() => {
+    try {
+      const saved = localStorage.getItem("foldersData");
+      return saved ? JSON.parse(saved) : structuredClone(defaultData);
+    } catch {
+      return structuredClone(defaultData);
+    }
+  });
+
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showMenu, setShowMenu] = useState(false);
   const [path, setPath] = useState([]);
@@ -22,33 +31,37 @@ function WorkSpace() {
   const [clickedFolderIndex, setClickedFolderIndex] = useState(null);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [editedDescription, setEditedDescription] = useState('');
-  const [videoAdded, setVideoAdded] = useState(false);
   const [timestampNote, setTimestampNote] = useState('');
   const [player, setPlayer] = useState(null);
   const [disabledButtons, setDisabledButtons] = useState(false);
 
   const currentFolder = getCurrentFolder();
 
-   useEffect(() => {
+  // ensure timestampNotes array exists
+  currentFolder.timestampNotes ??= [];
+
+  useEffect(() => {
+    localStorage.setItem("foldersData", JSON.stringify(foldersData));
+  }, [foldersData]);
+
+  useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-function getCurrentFolder() {
-  try {
-    let folder = foldersData;
-    for (const index of path) {
-      if (!folder.children || !folder.children[index]) {
-        // path broken : go back to root
-        return foldersData;
+  function getCurrentFolder() {
+    try {
+      let folder = foldersData;
+      for (const index of path) {
+        if (!folder.children || !folder.children[index]) {
+          return foldersData;
+        }
+        folder = folder.children[index];
       }
-      folder = folder.children[index];
+      return folder;
+    } catch {
+      return foldersData;
     }
-    return folder;
-  } catch {
-    // in case of any runtime edge case
-    return foldersData;
   }
-}
 
   function updateCurrentFolder(modifierFn) {
     const newData = structuredClone(foldersData);
@@ -115,42 +128,37 @@ function getCurrentFolder() {
     setShowMenu(false);
   }
 
- function handleDeleteFolder() {
-  const newData = structuredClone(foldersData);
+  function handleDeleteFolder() {
+    const newData = structuredClone(foldersData);
 
-  // navigate to the folder you're *currently viewing*
-  let folder = newData;
-  for (const index of path) {
-    folder = folder.children[index];
+    let folder = newData;
+    for (const index of path) {
+      folder = folder.children[index];
+    }
+
+    if (folder.children && clickedFolderIndex !== null) {
+      folder.children.splice(clickedFolderIndex, 1);
+    }
+
+    setFoldersData(newData);
+    setClickedFolderIndex(null);
+    setShowMenu(false);
+
+    const currentIndex = path[path.length - 1];
+    if (clickedFolderIndex === currentIndex) {
+      setPath(path.slice(0, -1));
+    }
+
+    if (clickedFolderIndex < path[path.length - 1]) {
+      const newPath = [...path];
+      newPath[newPath.length - 1] = newPath[newPath.length - 1] - 1;
+      setPath(newPath);
+    }
+
+    if (path.length === 0 && newData.children?.length === 0) {
+      setPath([]);
+    }
   }
-
-  // delete within this folder
-  if (folder.children && clickedFolderIndex !== null) {
-    folder.children.splice(clickedFolderIndex, 1);
-  }
-
-  setFoldersData(newData);
-  setClickedFolderIndex(null);
-  setShowMenu(false);
-
-  // handle "you deleted the folder you're currently in" case
-  const currentIndex = path[path.length - 1];
-  if (clickedFolderIndex === currentIndex) {
-    setPath(path.slice(0, -1));
-  }
-
-  //  if you deleted something before your current index, shift path
-  if (clickedFolderIndex < path[path.length - 1]) {
-    const newPath = [...path];
-    newPath[newPath.length - 1] = newPath[newPath.length - 1] - 1;
-    setPath(newPath);
-  }
-
-  //  if you deleted everything at root
-  if (path.length === 0 && newData.children?.length === 0) {
-    setPath([]);
-  }
-}
 
   function handleEditName() {
     setIsEditing(true);
@@ -182,15 +190,18 @@ function getCurrentFolder() {
   function handleLoadVideo() {
     const youtubeID = youtubeIDParser(videoURLInput);
     if (!youtubeID) return;
+
     updateCurrentFolder(folder => {
       folder.videoId = youtubeID;
       folder.timestampNotes = [];
     });
-    setVideoAdded(true);
+
+    setVideoURLInput('');
   }
 
   function handleAddTimestampNote() {
     if (!player || !currentFolder.isYoutubeNote) return;
+
     const time = Math.floor(player.getCurrentTime());
     updateCurrentFolder(folder => {
       folder.timestampNotes.push({ time, note: timestampNote });
@@ -227,7 +238,6 @@ function getCurrentFolder() {
   }, [path, foldersData]);
 
   return (
-
     <div
       className='bg-[#3B1C32] text-white min-h-[calc(100vh-3rem)]
        pl-[2rem] pr-[1rem] xl:pl-[15rem] xl:pr-[15rem]'
@@ -255,25 +265,23 @@ function getCurrentFolder() {
         <div className="flex flex-col gap-10 md:flex-row justify-around pt-4">
         
         {!currentFolder ? (
-        <div className="text-center pt-8 text-gray-300">
-        Folder not found.
-      </div>
-      ) : (
-      <FolderGrid 
-        currentFolder={currentFolder}
-        handleFolderClick={handleFolderClick}
-        handleFolderRightClick={handleFolderRightClick}
-      />
-)}
-
+          <div className="text-center pt-8 text-gray-300">
+            Folder not found.
+          </div>
+        ) : (
+          <FolderGrid 
+            currentFolder={currentFolder}
+            handleFolderClick={handleFolderClick}
+            handleFolderRightClick={handleFolderRightClick}
+          />
+        )}
 
           <YoutubeSection 
             currentFolder={currentFolder}
             videoURLInput={videoURLInput}
             setVideoURLInput={setVideoURLInput}
             handleLoadVideo={handleLoadVideo}
-            videoAdded={videoAdded}
-            setVideoAdded={setVideoAdded}
+            videoAdded={!!currentFolder?.videoId} // derived from folder
             timestampNote={timestampNote}
             setTimestampNote={setTimestampNote}
             handleAddTimestampNote={handleAddTimestampNote}
@@ -300,10 +308,7 @@ function getCurrentFolder() {
           />
 
         </div>
-  
       </div>
-
-     
     </div>
   );
 }

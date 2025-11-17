@@ -82,7 +82,7 @@ export default function YoutubeSection({
                 <li
                   key={idx}
                   className='cursor-pointer bg-[#561a45] text-white shadow w-full rounded hover:bg-[#2b1424]
-                  transition-all ease-in delay-5  overflow-y-auto'
+                  transition-all ease-in delay-5  overflow-y-auto p-2'
                   onClick={() => handleJumpToTime(note.time)}
                 >
                   <span className='text-white font-mono mr-2'>
