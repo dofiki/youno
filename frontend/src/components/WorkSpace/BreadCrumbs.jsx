@@ -8,7 +8,7 @@ export default function BreadCrumbs({
 }) {
 
   return (
-    <div className="flex gap-2 items-center">
+    <div className="flex gap-2 items-center pt-4">
       {path.length > 0 && (
         <button onClick={handleBack}>
           <IoArrowBack className="cursor-pointer text-white  hover:text-[#da42ae] transition-colors delay-5 "/>
