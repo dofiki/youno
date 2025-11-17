@@ -13,7 +13,7 @@ export default function FolderGrid({
                   key={index}
                   onClick={() => handleFolderClick(index)}
                   onContextMenu={(e) => handleFolderRightClick(e, index)}
-                  className='flex items-center gap-2 hover:text-[#da42ae] '
+                  className='flex items-center gap-2 hover:text-[#da42ae] transition-colors delay-5 '
                 >
                   {child.isYoutubeNote ? <FaYoutube className='text-red-600' /> : <FaFolder />}
                   {child.name}

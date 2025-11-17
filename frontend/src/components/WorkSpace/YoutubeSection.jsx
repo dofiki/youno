@@ -22,7 +22,7 @@ export default function YoutubeSection({
       <div className='flex'>
             <input
         type='text'
-        className='border px-2 py-1 rounded mr-2 w-[30rem]'
+        className='border h-full p-2 rounded-xl mr-2 w-[30rem] '
         value={videoURLInput}
         onChange={(e) => setVideoURLInput(e.target.value)}
         placeholder='e.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ'
@@ -30,24 +30,29 @@ export default function YoutubeSection({
 
       <button
         onClick={handleLoadVideo}
-        className=" bg-[#561a45] z-5 text-white w-max self-center
-         p-3 rounded-2xl font-bold flex align-middle 
+        className=" bg-[#561a45] z-5 text-1rem] text-white w-max self-center
+         pl-4 pr-4 pt-2 pb-2 rounded-2xl font-bold flex align-middle 
         justify-center gap-2 hover:bg-[#2b1424] transition-all ease-in delay-5 cursor-pointer"
       >
-        Load Video
+        Load
       </button>
       </div>
 
       {currentFolder.videoId && (
-        <div className='mt-5'>
-         <YouTube
+        <div className="relative w-full pb-[56.25%]"> 
+        <YouTube
           videoId={currentFolder.videoId}
           key={currentFolder.videoId}
           onReady={(e) => setPlayer(e.target)}
-          opts={{ playerVars: { autoplay: 0 } }}
+          opts={{
+            width: "100%",
+            height: "100%",
+            playerVars: { autoplay: 0 },
+          }}
+          className="absolute top-0 left-0 w-full h-full"
         />
+</div>
 
-        </div>
       )}
 
       {videoAdded && (
@@ -56,17 +61,17 @@ export default function YoutubeSection({
 
           <div className='flex gap-2'>
             <input
-              className='border px-2 py-1 rounded w-[25rem]'
+              className='border p-2 rounded-xl h-full p w-[25rem] '
               value={timestampNote}
               onChange={(e) => setTimestampNote(e.target.value)}
               placeholder='Note at current time...'
             />
             <button
               onClick={handleAddTimestampNote}
-               className=" bg-[#561a45] z-5 text-white w-max self-center p-3 rounded-2xl font-bold flex align-middle 
+               className=" bg-[#561a45] z-5 text-white w-max self-center pl-4 pr-4 pt-2 pb-2 rounded-2xl font-bold flex align-middle 
         justify-center gap-2 hover:bg-[#2b1424] transition-all ease-in delay-5 cursor-pointer "
             >
-              Add Timestamp
+              Add 
             </button>
           </div>
 
@@ -76,8 +81,8 @@ export default function YoutubeSection({
               {currentFolder.timestampNotes?.map((note, idx) => (
                 <li
                   key={idx}
-                  className='cursor-pointer bg-[#561a45] text-white shadow px-3 py-2 rounded hover:bg-[#2b1424]
-                  transition-all ease-in delay-5 w-[30vw] overflow-y-auto'
+                  className='cursor-pointer bg-[#561a45] text-white shadow w-full rounded hover:bg-[#2b1424]
+                  transition-all ease-in delay-5  overflow-y-auto'
                   onClick={() => handleJumpToTime(note.time)}
                 >
                   <span className='text-white font-mono mr-2'>

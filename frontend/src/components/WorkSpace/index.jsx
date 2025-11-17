@@ -38,14 +38,14 @@ function getCurrentFolder() {
     let folder = foldersData;
     for (const index of path) {
       if (!folder.children || !folder.children[index]) {
-        // Path broken — go back to root
+        // path broken : go back to root
         return foldersData;
       }
       folder = folder.children[index];
     }
     return folder;
   } catch {
-    // In case of any runtime edge case
+    // in case of any runtime edge case
     return foldersData;
   }
 }
@@ -118,13 +118,13 @@ function getCurrentFolder() {
  function handleDeleteFolder() {
   const newData = structuredClone(foldersData);
 
-  // Navigate to the folder you're *currently viewing*
+  // navigate to the folder you're *currently viewing*
   let folder = newData;
   for (const index of path) {
     folder = folder.children[index];
   }
 
-  // Delete within this folder
+  // delete within this folder
   if (folder.children && clickedFolderIndex !== null) {
     folder.children.splice(clickedFolderIndex, 1);
   }
@@ -133,25 +133,24 @@ function getCurrentFolder() {
   setClickedFolderIndex(null);
   setShowMenu(false);
 
-  // Handle "you deleted the folder you're currently in" case
+  // handle "you deleted the folder you're currently in" case
   const currentIndex = path[path.length - 1];
   if (clickedFolderIndex === currentIndex) {
     setPath(path.slice(0, -1));
   }
 
-  //  If you deleted something before your current index, shift path
+  //  if you deleted something before your current index, shift path
   if (clickedFolderIndex < path[path.length - 1]) {
     const newPath = [...path];
     newPath[newPath.length - 1] = newPath[newPath.length - 1] - 1;
     setPath(newPath);
   }
 
-  //  Root safety: if you deleted everything at root
+  //  if you deleted everything at root
   if (path.length === 0 && newData.children?.length === 0) {
     setPath([]);
   }
 }
-
 
   function handleEditName() {
     setIsEditing(true);
@@ -267,8 +266,6 @@ function getCurrentFolder() {
       />
 )}
 
-          
-         
 
           <YoutubeSection 
             currentFolder={currentFolder}

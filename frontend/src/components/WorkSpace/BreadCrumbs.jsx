@@ -11,7 +11,7 @@ export default function BreadCrumbs({
     <div className="flex gap-2 items-center">
       {path.length > 0 && (
         <button onClick={handleBack}>
-          <IoArrowBack className="cursor-pointer text-white  hover:text-[#da42ae] "/>
+          <IoArrowBack className="cursor-pointer text-white  hover:text-[#da42ae] transition-colors delay-5 "/>
         </button>
       )}
 
@@ -20,7 +20,7 @@ export default function BreadCrumbs({
           <span key={index}>
             {index > 0 && ' / '}
             <span
-              className="cursor-pointer text-white hover:text-[#da42ae] "
+              className="cursor-pointer text-white hover:text-[#da42ae] transition-colors delay-5 "
               onClick={() => setPath(path.slice(0, index))}
             >
               {name}
